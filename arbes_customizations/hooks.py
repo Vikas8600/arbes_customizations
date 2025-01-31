@@ -51,6 +51,12 @@ doctype_js = {
                 "Purchase Order" : "public/js/purchase_order.js",
                 "Purchase Invoice" : "public/js/purchase_invoice.js",
             }
+
+doc_events = { 
+    "Sales Order": {
+        "before_submit": "arbes_customizations.arbes_customization.override.sales_order.before_submit",
+    }
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
