@@ -55,6 +55,9 @@ doctype_js = {
 doc_events = { 
     "Sales Order": {
         "before_submit": "arbes_customizations.arbes_customization.override.sales_order.before_submit",
+    },
+    "Quotation": {
+        "after_insert": "arbes_customizations.arbes_customization.override.quotation.after_insert",
     }
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
