@@ -50,7 +50,8 @@ doctype_js = {
                 "Delivery Note" : "public/js/delivery_note.js",
                 "Purchase Order" : "public/js/purchase_order.js",
                 "Purchase Invoice" : "public/js/purchase_invoice.js",
-            }
+                "Production Plan": "public/js/production_plan.js"
+    }
 
 doc_events = { 
     "Sales Order": {
@@ -58,7 +59,13 @@ doc_events = {
     },
     "Quotation": {
         "after_insert": "arbes_customizations.arbes_customization.override.quotation.after_insert",
-    }
+    },
+    "Customer": {
+        "before_insert": "arbes_customizations.arbes_customization.override.customer.before_insert"
+    },
+    "Supplier": {
+        "before_insert": "arbes_customizations.arbes_customization.override.supplier.before_insert"
+    },
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
