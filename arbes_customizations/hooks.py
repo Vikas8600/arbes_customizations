@@ -50,7 +50,8 @@ doctype_js = {
                 "Delivery Note" : "public/js/delivery_note.js",
                 "Purchase Order" : "public/js/purchase_order.js",
                 "Purchase Invoice" : "public/js/purchase_invoice.js",
-                "Production Plan": "public/js/production_plan.js"
+                "Production Plan": "public/js/production_plan.js",
+                "Material Request": "public/js/material_request.js",
     }
 
 doc_events = { 
