@@ -46,10 +46,14 @@ app_license = "mit"
 doctype_js = {
                 "Quotation" : "public/js/quotation.js",
                 "Sales Order" : "public/js/sales_order.js",
-                "Sales Invoice" : "public/js/sales_invoice.js",
-                "Delivery Note" : "public/js/delivery_note.js",
+                "Sales Invoice" : ["public/js/sales_invoice.js","public/js/e_waybill_override.js"],
+                "Delivery Note" : ["public/js/delivery_note.js","public/js/e_waybill_override.js"],
                 "Purchase Order" : "public/js/purchase_order.js",
-                "Purchase Invoice" : "public/js/purchase_invoice.js",
+                "Purchase Receipt":"public/js/e_waybill_override.js",
+                "Stock Entry" : "public/js/e_waybill_override.js",
+                "Subcontracting Order":"public/js/e_waybill_override.js",
+                "Subcontracting Receipt":"public/js/e_waybill_override.js",
+                "Purchase Invoice" : ["public/js/purchase_invoice.js","public/js/e_waybill_override.js"],
                 "Production Plan": "public/js/production_plan.js",
                 "Material Request": "public/js/material_request.js",
     }

@@ -1,0 +1,11 @@
+{
+    "doctype": "Print Format",
+    "name": "e-Waybill",
+    "doc_type": "e-Waybill Log",
+    "module": "Arbes Customization",
+    "is_standard": 0,
+    "disabled": 0,
+    "print_format_type": "Jinja",
+    "custom_format": 1
+  }
+  
