@@ -72,8 +72,24 @@ frappe.ui.form.on('Purchase Order Item', {
     },
     custom_across_flat: function(frm, cdt, cdn) {
         calculate_weight(frm, cdt, cdn);
-    }
+    },
+    weight_per_unit: function(frm, cdt, cdn) {
+        calculate_total_weight(frm, cdt, cdn);
+    },
+    qty: function(frm, cdt, cdn) {
+        calculate_total_weight(frm, cdt, cdn);
+    },
 });
+
+function calculate_total_weight(frm, cdt, cdn) {
+    let d = locals[cdt][cdn];
+    let weight_per_unit = flt(d.weight_per_unit);
+    let qty = flt(d.qty);
+    if (weight_per_unit && qty) {
+        custom_total_weight = weight_per_unit * qty;
+        frappe.model.set_value(cdt, cdn, "total_weight", custom_total_weight);
+    }
+}
 
 function calculate_weight(frm, cdt, cdn) {
     let d = locals[cdt][cdn];
