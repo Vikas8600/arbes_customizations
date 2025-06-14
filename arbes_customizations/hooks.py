@@ -56,6 +56,7 @@ doctype_js = {
                 "Purchase Invoice" : ["public/js/purchase_invoice.js","public/js/e_waybill_override.js"],
                 "Production Plan": "public/js/production_plan.js",
                 "Material Request": "public/js/material_request.js",
+                "Item": "public/js/item.js"
     }
 
 doc_events = { 
