@@ -64,7 +64,9 @@ frappe.ui.form.on('Item', {
             section_to_factor[shape] &&
             ((default_uom === "Kg" && to_uom === "MM") || (default_uom === "MM" && to_uom === "Kg"))
         ) {
-            const factor = section_to_factor[shape];
+            let base_factor = section_to_factor[shape];
+            let inverse = default_uom === "MM";
+            let factor = inverse ? (1 / base_factor) : base_factor;
         
             let default_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === default_uom.toUpperCase());
             if (default_row) {
