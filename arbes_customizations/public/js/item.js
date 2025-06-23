@@ -1,82 +1,96 @@
 frappe.ui.form.on('Item', {
-        custom_section: function (frm) {
-            if (!frm.doc.custom_section) return;
+    custom_section: function (frm) {
+        if (!frm.doc.custom_section) return;
     
-            const section = frm.doc.custom_section.trim().toUpperCase();
-            const default_uom = frm.doc.stock_uom;
+        const section_input = frm.doc.custom_section.trim().toUpperCase();
+        const default_uom = frm.doc.stock_uom;
+        const to_uom = frm.doc.custom_to_uom;
     
-            const section_to_shape = {
-                "SS304 ROUND BARS": "ROUND",
-                "SS316 ROUND BARS": "ROUND",
-                "EN8 ROUND BARS": "ROUND",
-                "EN9 ROUND BARS": "ROUND",
-                "EN24 ROUND BARS": "ROUND",
-                "BRASS ROUND BAR": "ROUND",
-                "ALUMINIUM ROUND BAR": "ROUND",
+        const section_to_shape = {
+            "SS304 ROUND BARS": "ROUND",
+            "SS316 ROUND BARS": "ROUND",
+            "EN8 ROUND BARS": "ROUND",
+            "EN9 ROUND BARS": "ROUND",
+            "EN24 ROUND BARS": "ROUND",
+            "BRASS ROUND BAR": "ROUND",
+            "ALUMINIUM ROUND BAR": "ROUND",
     
-                "BRASS SQUARE BAR": "SQUARE",
-                "ALUMINIUM SQUARE BAR": "SQUARE",
-                "SS304 HOLLOW PIPES (RECTANGLE)": "RECTANGLE HOLLOW PIPE",
-                "SS304 HOLLOW PIPES (SQUARE)": "SQUARE HOLLOW PIPE",
-                "SS304 HOLLOW PIPES (ROUND)": "ROUND HOLLOW PIPE"
-            };
+            "BRASS SQUARE BAR": "SQUARE",
+            "ALUMINIUM SQUARE BAR": "SQUARE",
+            "SS304 HOLLOW PIPES (RECTANGLE)": "RECTANGLE HOLLOW PIPE",
+            "SS304 HOLLOW PIPES (SQUARE)": "SQUARE HOLLOW PIPE",
+            "SS304 HOLLOW PIPES (ROUND)": "ROUND HOLLOW PIPE"
+        };
     
-            const section_to_specific_gravity = {
-                "SS304 ROUND BARS": 7.88,
-                "SS316 ROUND BARS": 7.87,
-                // "SS304 SHEETS": 8.03,
-                // "SS316 SHEETS": 8.03,
-                // "SS304 CUT PIECES": 8.03,
-                "SS304 HOLLOW PIPES (RECTANGLE)": 7.88,
-                "SS304 HOLLOW PIPES (SQUARE)": 7.88,
-                "SS304 HOLLOW PIPES (ROUND)": 7.88,
+        const section_to_specific_gravity = {
+            "SS304 ROUND BARS": 7.88,
+            "SS316 ROUND BARS": 7.87,
+            "SS304 HOLLOW PIPES (RECTANGLE)": 7.88,
+            "SS304 HOLLOW PIPES (SQUARE)": 7.88,
+            "SS304 HOLLOW PIPES (ROUND)": 7.88,
+            "BRASS SQUARE BAR": 8.5,
+            "BRASS ROUND BAR": 8.43,
+            "ALUMINIUM ROUND BAR": 2.71,
+            "ALUMINIUM SQUARE BAR": 2.71,
+            "EN8 ROUND BARS": 7.86,
+            "EN9 ROUND BARS": 7.87,
+            "EN24 ROUND BARS": 7.85
+        };
     
-                "BRASS SQUARE BAR": 8.5,
-                "BRASS ROUND BAR": 8.43,
+        const section_to_factor = {
+            "SQUARE": 0.012688,
+            "RECTANGLE": 0.003965,
+            "RECTANGLE HOLLOW PIPE": 0.003044,
+            "ROUND HOLLOW PIPE": 0.00276,
+            "ROUND": 0.00996,
+            "SQUARE HOLLOW PIPE": 0.00352,
+            "HEXAGON": 0.00824
+        };
     
-                "ALUMINIUM ROUND BAR": 2.71,
-                "ALUMINIUM SQUARE BAR": 2.71,
-                // "ALUMINIUM SHEETS": 2.71,
+        let shape = section_to_shape[section_input];
     
-                "EN8 ROUND BARS": 7.86,
-                "EN9 ROUND BARS": 7.87,
-                "EN24 ROUND BARS": 7.85
-            };
+        if (!shape && section_to_factor[section_input]) {
+            shape = section_input;
+        }
+   
+        if (section_to_specific_gravity[section_input]) {
+            frm.set_value("custom_specific_gravity", section_to_specific_gravity[section_input]);
+        } else {
+            frm.set_value("custom_specific_gravity", null);
+        }
     
-            const section_to_factor = {
-                "SQUARE": 0.012688,
-                "RECTANGLE": 0.003965,
-                "RECTANGLE HOLLOW PIPE": 0.003044,
-                "ROUND HOLLOW PIPE": 0.00276,
-                "ROUND": 0.00996,
-                "SQUARE HOLLOW PIPE": 0.00352,
-                "HEXAGON": 0.00824
-            };
-    
-            // ✅ Set specific gravity
-            if (section_to_specific_gravity[section]) {
-                frm.set_value("custom_specific_gravity", section_to_specific_gravity[section]);
+        if (
+            shape &&
+            section_to_factor[shape] &&
+            ((default_uom === "Kg" && to_uom === "MM") || (default_uom === "MM" && to_uom === "Kg"))
+        ) {
+            const factor = section_to_factor[shape];
+        
+            let default_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === default_uom.toUpperCase());
+            if (default_row) {
+                frappe.model.set_value(default_row.doctype, default_row.name, "conversion_factor", 1);
             } else {
-                frm.set_value("custom_specific_gravity", null);
+                frm.add_child("uoms", {
+                    uom: default_uom,
+                    conversion_factor: 1
+                });
             }
-    
-            // ✅ Set conversion factor (MM to Kg) based on shape
-            const shape = section_to_shape[section];
-            if (default_uom === "Kg" && shape && section_to_factor[shape]) {
-                let factor = section_to_factor[shape];
-                let uom_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === "MM");
-    
-                if (uom_row) {
-                    frappe.model.set_value(uom_row.doctype, uom_row.name, "conversion_factor", factor);
-                } else {
-                    frm.add_child("uoms", {
-                        uom: "MM",
-                        conversion_factor: factor
-                    });
-                    frm.refresh_field("uoms");
-                }
+        
+            let to_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === to_uom.toUpperCase());
+            if (to_row) {
+                frappe.model.set_value(to_row.doctype, to_row.name, "conversion_factor", factor);
+            } else {
+                frm.add_child("uoms", {
+                    uom: to_uom,
+                    conversion_factor: factor
+                });
             }
-        },
+        
+            frm.refresh_field("uoms");
+        }
+        
+    },
+    
     custom_custom_section: function(frm, cdt, cdn) {
         calculate_weight(frm, cdt, cdn);
     },
