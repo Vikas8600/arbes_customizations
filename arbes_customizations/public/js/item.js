@@ -42,7 +42,7 @@ frappe.ui.form.on('Item', {
             "RECTANGLE": 0.003965,
             "RECTANGLE HOLLOW PIPE": 0.003044,
             "ROUND HOLLOW PIPE": 0.00276,
-            "ROUND": 0.00996,
+            "ROUND": 0.0096,
             "SQUARE HOLLOW PIPE": 0.00352,
             "HEXAGON": 0.00824
         };
@@ -67,7 +67,7 @@ frappe.ui.form.on('Item', {
             let base_factor = section_to_factor[shape];
             let inverse = default_uom === "MM";
             let factor = inverse ? (1 / base_factor) : base_factor;
-        
+            console.log(factor)
             let default_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === default_uom.toUpperCase());
             if (default_row) {
                 frappe.model.set_value(default_row.doctype, default_row.name, "conversion_factor", 1);
