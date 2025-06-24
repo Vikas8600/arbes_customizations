@@ -25,6 +25,10 @@ frappe.ui.form.on('Item', {
         const section_to_specific_gravity = {
             "SS304 ROUND BARS": 7.88,
             "SS316 ROUND BARS": 7.87,
+            "SS304 SHEETS" : 8.03,
+            "SS316 SHEETS" : 8.03,
+            "ALUMINIUM SHEETS":2.71,
+            "SS304 Cut Pieces" :8.03,
             "SS304 HOLLOW PIPES (RECTANGLE)": 7.88,
             "SS304 HOLLOW PIPES (SQUARE)": 7.88,
             "SS304 HOLLOW PIPES (ROUND)": 7.88,
@@ -34,7 +38,12 @@ frappe.ui.form.on('Item', {
             "ALUMINIUM SQUARE BAR": 2.71,
             "EN8 ROUND BARS": 7.86,
             "EN9 ROUND BARS": 7.87,
-            "EN24 ROUND BARS": 7.85
+            "EN24 ROUND BARS": 7.85,
+            "K110 Cut pieces" :7.7,
+            "Stavax Cut Pieces": 7.8,
+            "Rammax Cut Pieces" :7.7,
+            "MS Plates":7.86,
+            "Ms Cut Pieces" : 7.86
         };
     
         const section_to_factor = {
@@ -100,6 +109,12 @@ frappe.ui.form.on('Item', {
         calculate_weight(frm, cdt, cdn);
     },
     custom_side: function(frm, cdt, cdn) {
+        calculate_weight(frm, cdt, cdn);
+    },
+    custom_two_side: function(frm, cdt, cdn) {
+        calculate_weight(frm, cdt, cdn);
+    },
+    custom_thickness: function(frm, cdt, cdn) {
         calculate_weight(frm, cdt, cdn);
     },
     custom_height: function(frm, cdt, cdn) {
@@ -211,12 +226,49 @@ function calculate_weight(frm, cdt, cdn) {
             let ow = flt(d.custom_outer_width);
             let ih = flt(d.custom_inner_height);
             let iw = flt(d.custom_inner_width);
-            console.log(oh)
-            console.log(ow)
-            console.log(ih)
-            console.log(iw)
+            
             if (oh && ow && ih && iw && sp_gr) {
                 weight = ((oh * ow) - (ih * iw)) * sp_gr * 0.000001;
+            }
+            break;
+
+        case "SS304 SHEETS":
+        case "SS316 SHEETS":
+            let side1 = flt(d.custom_side);
+            let side2 = flt(d.custom_two_side);
+            let thk = flt(d.custom_thickness);
+            console.log(thk)
+            if (side1 && side2 && thk && sp_gr) {
+                weight = side1 * side2 * thk * sp_gr * 0.000001;
+            }
+            break;
+        
+        case "ALUMINIUM SHEETS":
+            let side_one = flt(d.custom_side);
+            let side_two = flt(d.custom_two_side);
+            let thickness = flt(d.custom_thickness);
+            if (side_one && side_two && thickness && sp_gr) {
+                weight = side1 * side2 * thickness * sp_gr * 0.000001;
+            }
+            break;
+            
+        case "K110 Cut pieces":
+        case "Stavax Cut Pieces":
+        case "Rammax Cut Pieces":
+            let side_x = flt(d.custom_side);
+            let side_y = flt(d.custom_two_side);
+            let thickness_z = flt(d.custom_thickness);
+            if (side_x && side_y && thickness_z && sp_gr) {
+                weight = side_x * side_y * thickness_z * sp_gr * 0.000001;
+            }
+            break;
+
+        case "SS304 Cut Pieces":
+            let side_a = flt(d.custom_side);
+            let side_b= flt(d.custom_two_side);
+            let thickness_c = flt(d.custom_thickness);
+            if (side_a && side_b && thickness_c && sp_gr) {
+                weight = side_a * side_b * thickness_c * sp_gr * 0.000001;
             }
             break;
 
