@@ -19,7 +19,17 @@ frappe.ui.form.on('Item', {
             "ALUMINIUM SQUARE BAR": "SQUARE",
             "SS304 HOLLOW PIPES (RECTANGLE)": "RECTANGLE HOLLOW PIPE",
             "SS304 HOLLOW PIPES (SQUARE)": "SQUARE HOLLOW PIPE",
-            "SS304 HOLLOW PIPES (ROUND)": "ROUND HOLLOW PIPE"
+            "SS304 HOLLOW PIPES (ROUND)": "ROUND HOLLOW PIPE",
+            "K110 Cut pieces" :"K110 Cut pieces",
+            "Stavax Cut Pieces": "Stavax Cut Pieces",
+            "Rammax Cut Pieces" : "Rammax Cut Pieces",
+            "MS Plates":"MS Plates",
+            "Ms Cut Pieces" : "Ms Cut Pieces",
+            "SS304 SHEETS" : "SS304 SHEETS",
+            "SS316 SHEETS" : "SS316 SHEETS",
+            "ALUMINIUM SHEETS":"ALUMINIUM SHEETS",
+            "SS304 Cut Pieces" :"SS304 Cut Pieces"
+
         };
     
         const section_to_specific_gravity = {
@@ -53,7 +63,15 @@ frappe.ui.form.on('Item', {
             "ROUND HOLLOW PIPE": 0.00276,
             "ROUND": 0.0096,
             "SQUARE HOLLOW PIPE": 0.00352,
-            "HEXAGON": 0.00824
+            "HEXAGON": 0.00824,
+            "SS304 SHEETS":0.001606,
+            "SS316 SHEETS":0.001606,
+            "SS304 CUT PIECES": 0.001606,
+            "K110 CUT PIECES":0.001540,
+            "STAVAX CUT PIECES":	0.001560,
+            "RAMMAX CUT PIECES":	0.001540,
+            "ALUMINIUM SHEETS":0.000542,
+            "MS CUT PIECES" : 0.001572
         };
     
         let shape = section_to_shape[section_input];
@@ -63,16 +81,19 @@ frappe.ui.form.on('Item', {
         }
    
         if (section_to_specific_gravity[section_input]) {
+
             frm.set_value("custom_specific_gravity", section_to_specific_gravity[section_input]);
         } else {
             frm.set_value("custom_specific_gravity", null);
         }
-    
+           
         if (
             shape &&
             section_to_factor[shape] &&
             ((default_uom === "Kg" && to_uom === "MM") || (default_uom === "MM" && to_uom === "Kg"))
         ) {
+            console.log(shape)
+            console.log(section_to_factor[shape])
             let base_factor = section_to_factor[shape];
             let inverse = default_uom === "MM";
             let factor = inverse ? (1 / base_factor) : base_factor;
