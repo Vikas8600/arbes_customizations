@@ -5,33 +5,7 @@ frappe.ui.form.on('Item', {
         const section_input = frm.doc.custom_section.trim().toUpperCase();
         const default_uom = frm.doc.stock_uom;
         const to_uom = frm.doc.custom_to_uom;
-    
-        const section_to_shape = {
-            "SS304 ROUND BARS": "ROUND",
-            "SS316 ROUND BARS": "ROUND",
-            "EN8 ROUND BARS": "ROUND",
-            "EN9 ROUND BARS": "ROUND",
-            "EN24 ROUND BARS": "ROUND",
-            "BRASS ROUND BAR": "ROUND",
-            "ALUMINIUM ROUND BAR": "ROUND",
-    
-            "BRASS SQUARE BAR": "SQUARE",
-            "ALUMINIUM SQUARE BAR": "SQUARE",
-            "SS304 HOLLOW PIPES (RECTANGLE)": "RECTANGLE HOLLOW PIPE",
-            "SS304 HOLLOW PIPES (SQUARE)": "SQUARE HOLLOW PIPE",
-            "SS304 HOLLOW PIPES (ROUND)": "ROUND HOLLOW PIPE",
-            "K110 Cut pieces" :"K110 Cut pieces",
-            "Stavax Cut Pieces": "Stavax Cut Pieces",
-            "Rammax Cut Pieces" : "Rammax Cut Pieces",
-            "MS Plates":"MS Plates",
-            "Ms Cut Pieces" : "Ms Cut Pieces",
-            "SS304 SHEETS" : "SS304 SHEETS",
-            "SS316 SHEETS" : "SS316 SHEETS",
-            "ALUMINIUM SHEETS":"ALUMINIUM SHEETS",
-            "SS304 Cut Pieces" :"SS304 Cut Pieces"
-
-        };
-    
+        frm.clear_table("uoms");
         const section_to_specific_gravity = {
             "SS304 ROUND BARS": 7.88,
             "SS316 ROUND BARS": 7.87,
@@ -53,10 +27,7 @@ frappe.ui.form.on('Item', {
             "Stavax Cut Pieces": 7.8,
             "Rammax Cut Pieces" :7.7,
             "MS Plates":7.86,
-            "Ms Cut Pieces" : 7.86
-        };
-    
-        const section_to_factor = {
+            "Ms Cut Pieces" : 7.86,
             "SQUARE": 0.012688,
             "RECTANGLE": 0.003965,
             "RECTANGLE HOLLOW PIPE": 0.003044,
@@ -74,53 +45,17 @@ frappe.ui.form.on('Item', {
             "MS CUT PIECES" : 0.001572
         };
     
-        let shape = section_to_shape[section_input];
     
-        if (!shape && section_to_factor[section_input]) {
-            shape = section_input;
-        }
-   
-        if (section_to_specific_gravity[section_input]) {
-
+        let shape = section_to_specific_gravity[section_input];
+    
+     
+        if (shape) {   
             frm.set_value("custom_specific_gravity", section_to_specific_gravity[section_input]);
         } else {
             frm.set_value("custom_specific_gravity", null);
         }
-           
-        if (
-            shape &&
-            section_to_factor[shape] &&
-            ((default_uom === "Kg" && to_uom === "MM") || (default_uom === "MM" && to_uom === "Kg"))
-        ) {
-            console.log(shape)
-            console.log(section_to_factor[shape])
-            let base_factor = section_to_factor[shape];
-            let inverse = default_uom === "MM";
-            let factor = inverse ? (1 / base_factor) : base_factor;
-            console.log(factor)
-            let default_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === default_uom.toUpperCase());
-            if (default_row) {
-                frappe.model.set_value(default_row.doctype, default_row.name, "conversion_factor", 1);
-            } else {
-                frm.add_child("uoms", {
-                    uom: default_uom,
-                    conversion_factor: 1
-                });
-            }
-        
-            let to_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === to_uom.toUpperCase());
-            if (to_row) {
-                frappe.model.set_value(to_row.doctype, to_row.name, "conversion_factor", factor);
-            } else {
-                frm.add_child("uoms", {
-                    uom: to_uom,
-                    conversion_factor: factor
-                });
-            }
-        
-            frm.refresh_field("uoms");
-        }
-        
+
+        frm.refresh_field("uoms");
     },
     
     custom_custom_section: function(frm, cdt, cdn) {
@@ -199,9 +134,63 @@ function calculate_weight(frm, cdt, cdn) {
     let weight = 0;
 
     switch (section) {
-        
-          
-    
+        case "SQUARE":
+            let sq_side = flt(d.custom_side);
+            console.log(sq_side)
+            if (sq_side && sp_gr) {
+                console.log(sp_gr)
+                weight = sq_side ** 2 * sp_gr * 0.000001;
+                console.log(weight)
+            }
+        break;
+
+    case "RECTANGLE":
+        let rect_h = flt(d.custom_height);
+        let rect_w = flt(d.custom_width);
+        if (rect_h && rect_w && sp_gr) {
+            weight = rect_h * rect_w * sp_gr * 0.000001;
+        }
+        break;
+
+    case "ROUND":
+        let round_dia = flt(d.custom_diameter);
+        if (round_dia && sp_gr) {
+            weight = 0.785398 * round_dia ** 2 * sp_gr * 0.000001;
+        }
+        break;
+
+    case "ROUND HOLLOW PIPE":
+        let round_od = flt(d.custom_outer_diameter);
+        let round_id = flt(d.custom_inner_diameter);
+        if (round_od && round_id && sp_gr) {
+            weight = 0.785398 * (round_od ** 2 - round_id ** 2) * sp_gr * 0.000001;
+        }
+        break;
+
+    case "SQUARE HOLLOW PIPE":
+        let sh_outer = flt(d.custom_outer_side);
+        let sh_inner = flt(d.custom_inner_side);
+        if (sh_outer && sh_inner && sp_gr) {
+            weight = (sh_outer ** 2 - sh_inner ** 2) * sp_gr * 0.000001;
+        }
+        break;
+
+    case "RECTANGLE HOLLOW PIPE":
+        let rh_oh = flt(d.custom_outer_height);
+        let rh_ow = flt(d.custom_outer_width);
+        let rh_ih = flt(d.custom_inner_height);
+        let rh_iw = flt(d.custom_inner_width);
+        if (rh_oh && rh_ow && rh_ih && rh_iw && sp_gr) {
+            weight = (rh_oh * rh_ow - rh_ih * rh_iw) * sp_gr * 0.000001;
+        }
+        break;
+
+    case "HEXAGON":
+        let across_flat = flt(d.custom_across_flat);
+        if (across_flat && sp_gr) {
+            weight = 0.866025 * across_flat ** 2 * sp_gr * 0.000001;
+        }
+        break;
     case "BRASS SQUARE BAR":
         case "ALUMINIUM SQUARE BAR":
             let side_square = flt(d.custom_side);
@@ -221,6 +210,7 @@ function calculate_weight(frm, cdt, cdn) {
             console.log(sp_gr)
             if (dia && sp_gr) {
                 weight = 0.785398 * dia ** 2 * sp_gr * 0.000001;
+                console.log(weight)
             }
             break;
 
@@ -296,4 +286,52 @@ function calculate_weight(frm, cdt, cdn) {
     }
 
     frappe.model.set_value(cdt, cdn, "custom_total_weight", flt(weight) || 0);
+    console.log(flt(weight))
+    update_conversion_factor_from_weight(frm);    
 }
+
+function update_conversion_factor_from_weight(frm) {
+    const default_uom = frm.doc.stock_uom;
+    const to_uom = frm.doc.custom_to_uom;
+    const weight = flt(frm.doc.weight_per_unit || frm.doc.custom_total_weight);
+    console.log(weight)
+    if (!default_uom || !to_uom || !weight) return;
+
+    let factor = 1;
+
+    if (default_uom === "Kg" && to_uom === "MM") {
+        factor = weight;
+        console.log(factor)
+    } else if (default_uom === "MM" && to_uom === "Kg") {
+      
+        factor = weight ? (1 / weight) : 0;
+        console.log(factor)
+    } else {
+        return;
+    }
+
+    // Set default UOM factor = 1
+    let default_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === default_uom.toUpperCase());
+    if (default_row) {
+        frappe.model.set_value(default_row.doctype, default_row.name, "conversion_factor", 1);
+    } else {
+        frm.add_child("uoms", {
+            uom: default_uom,
+            conversion_factor: 1
+        });
+    }
+
+    // Set conversion factor for target UOM
+    let to_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === to_uom.toUpperCase());
+    if (to_row) {
+        frappe.model.set_value(to_row.doctype, to_row.name, "conversion_factor", factor);
+    } else {
+        frm.add_child("uoms", {
+            uom: to_uom,
+            conversion_factor: factor
+        });
+    }
+
+    frm.refresh_field("uoms");
+}
+
