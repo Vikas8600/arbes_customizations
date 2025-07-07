@@ -1,8 +1,26 @@
 frappe.ui.form.on('Item', {
+    stock_uom: function(frm){
+        if (frm.doc.stock_uom === "MM"){
+            frm.set_value("custom_to_uom", "Kg");
+            update_conversion_factor_from_weight(frm);
+        }
+
+    },
+    after_save:function(frm){
+        if (flt(frm.doc.custom_specific_gravity) > 0 || flt(frm.doc.custom_total_weight) > 0) {
+            update_conversion_factor_from_weight(frm);
+        }
+    },
+    validate: function (frm) {
+        if (flt(frm.doc.custom_specific_gravity) > 0 || flt(frm.doc.custom_total_weight) > 0) {
+            update_conversion_factor_from_weight(frm);
+        }
+    },
     custom_section: function (frm) {
         if (!frm.doc.custom_section) return;
     
         const section_input = frm.doc.custom_section.trim().toUpperCase();
+        console.log(section_input)
         const default_uom = frm.doc.stock_uom;
         const to_uom = frm.doc.custom_to_uom;
         frm.clear_table("uoms");
@@ -12,7 +30,7 @@ frappe.ui.form.on('Item', {
             "SS304 SHEETS" : 8.03,
             "SS316 SHEETS" : 8.03,
             "ALUMINIUM SHEETS":2.71,
-            "SS304 Cut Pieces" :8.03,
+            "SS304 CUT PIECES" :8.03,
             "SS304 HOLLOW PIPES (RECTANGLE)": 7.88,
             "SS304 HOLLOW PIPES (SQUARE)": 7.88,
             "SS304 HOLLOW PIPES (ROUND)": 7.88,
@@ -23,36 +41,28 @@ frappe.ui.form.on('Item', {
             "EN8 ROUND BARS": 7.86,
             "EN9 ROUND BARS": 7.87,
             "EN24 ROUND BARS": 7.85,
-            "K110 Cut pieces" :7.7,
-            "Stavax Cut Pieces": 7.8,
-            "Rammax Cut Pieces" :7.7,
-            "MS Plates":7.86,
-            "Ms Cut Pieces" : 7.86,
-            "SQUARE": 0.012688,
-            "RECTANGLE": 0.003965,
-            "RECTANGLE HOLLOW PIPE": 0.003044,
-            "ROUND HOLLOW PIPE": 0.00276,
-            "ROUND": 0.0096,
-            "SQUARE HOLLOW PIPE": 0.00352,
-            "HEXAGON": 0.00824,
-            "SS304 SHEETS":0.001606,
-            "SS316 SHEETS":0.001606,
-            "SS304 CUT PIECES": 0.001606,
-            "K110 CUT PIECES":0.001540,
-            "STAVAX CUT PIECES":	0.001560,
-            "RAMMAX CUT PIECES":	0.001540,
-            "ALUMINIUM SHEETS":0.000542,
-            "MS CUT PIECES" : 0.001572
+            "K110 CUT PIECES" :7.7,
+            "STAVAX CUT PIECES": 7.8,
+            "RAMMAX CUT PIECES" :7.7,
+            "MS PLATES":7.86,
+            "Ms CUT PIECES" : 7.86,
+            "CUT PIECE": 0.0,
+            "RECTANGLE": 0.0,
+            "RECTANGLE HOLLOW PIPE": 0.0,
+            "ROUND HOLLOW PIPE": 0.0,
+            "ROUND": 0.0,
+            "SQUARE HOLLOW PIPE": 0.0,
+            "HEXAGON": 0.0,
         };
     
     
         let shape = section_to_specific_gravity[section_input];
-    
-     
+        console.log(shape)
         if (shape) {   
+            console.log(section_to_specific_gravity[section_input])
             frm.set_value("custom_specific_gravity", section_to_specific_gravity[section_input]);
         } else {
-            frm.set_value("custom_specific_gravity", null);
+            frm.set_value("custom_specific_gravity", "0");
         }
 
         frm.refresh_field("uoms");
@@ -134,12 +144,13 @@ function calculate_weight(frm, cdt, cdn) {
     let weight = 0;
 
     switch (section) {
-        case "SQUARE":
-            let sq_side = flt(d.custom_side);
-            console.log(sq_side)
-            if (sq_side && sp_gr) {
+        case "CUT PIECE":
+            let sq_side_one = flt(d.custom_side);
+            let sq_side_two = flt(d.custom_two_side)
+            console.log(sq_side_one)
+            if (sq_side_one && sp_gr && sq_side_two) {
                 console.log(sp_gr)
-                weight = sq_side ** 2 * sp_gr * 0.000001;
+                weight = sq_side_one * sq_side_two * sp_gr * 0.000001;
                 console.log(weight)
             }
         break;
@@ -245,6 +256,7 @@ function calculate_weight(frm, cdt, cdn) {
 
         case "SS304 SHEETS":
         case "SS316 SHEETS":
+        case "MS PLATES":
             let side1 = flt(d.custom_side);
             let side2 = flt(d.custom_two_side);
             let thk = flt(d.custom_thickness);
@@ -286,7 +298,7 @@ function calculate_weight(frm, cdt, cdn) {
     }
 
     frappe.model.set_value(cdt, cdn, "custom_total_weight", flt(weight) || 0);
-    console.log(flt(weight))
+
     update_conversion_factor_from_weight(frm);    
 }
 
@@ -294,14 +306,12 @@ function update_conversion_factor_from_weight(frm) {
     const default_uom = frm.doc.stock_uom;
     const to_uom = frm.doc.custom_to_uom;
     const weight = flt(frm.doc.weight_per_unit || frm.doc.custom_total_weight);
-    console.log(weight)
-    if (!default_uom || !to_uom || !weight) return;
+    if (!default_uom || !to_uom || !weight || weight<=0) return;
 
     let factor = 1;
 
     if (default_uom === "Kg" && to_uom === "MM") {
         factor = weight;
-        console.log(factor)
     } else if (default_uom === "MM" && to_uom === "Kg") {
       
         factor = weight ? (1 / weight) : 0;
