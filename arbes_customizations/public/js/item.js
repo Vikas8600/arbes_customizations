@@ -1,4 +1,5 @@
 frappe.ui.form.on('Item', {
+
     stock_uom: function(frm){
         if (frm.doc.stock_uom === "MM"){
             frm.set_value("custom_to_uom", "Kg");
@@ -16,11 +17,8 @@ frappe.ui.form.on('Item', {
             update_conversion_factor_from_weight(frm);
         }
     },
-    custom_section: function (frm) {
-        if (!frm.doc.custom_section) return;
-    
+    custom_section: function (frm) {  
         const section_input = frm.doc.custom_section.trim().toUpperCase();
-        console.log(section_input)
         const default_uom = frm.doc.stock_uom;
         const to_uom = frm.doc.custom_to_uom;
         frm.clear_table("uoms");
@@ -54,8 +52,23 @@ frappe.ui.form.on('Item', {
             "SQUARE HOLLOW PIPE": 0.0,
             "HEXAGON": 0.0,
         };
+        const fields_to_clear = [
+            "custom_side", "custom_two_side", "custom_thickness",
+            "custom_height", "custom_width", "custom_diameter",
+            "custom_outer_diameter", "custom_inner_diameter",
+            "custom_outer_side", "custom_inner_side",
+            "custom_outer_height", "custom_outer_width",
+            "custom_inner_height", "custom_inner_width",
+            "custom_across_flat", "custom_total_weight"
+        ];
+        fields_to_clear.forEach(field => frm.set_value(field, null));
     
-    
+        if (!section_input) {
+            frm.set_value("custom_specific_gravity", "0");
+            frm.doc.uoms = [];
+            frm.refresh_field("uoms");
+            return;
+        }
         let shape = section_to_specific_gravity[section_input];
         console.log(shape)
         if (shape) {   
@@ -67,7 +80,6 @@ frappe.ui.form.on('Item', {
 
         frm.refresh_field("uoms");
     },
-    
     custom_custom_section: function(frm, cdt, cdn) {
         calculate_weight(frm, cdt, cdn);
     },
@@ -119,23 +131,10 @@ frappe.ui.form.on('Item', {
     custom_across_flat: function(frm, cdt, cdn) {
         calculate_weight(frm, cdt, cdn);
     },
-    weight_per_unit: function(frm, cdt, cdn) {
-        calculate_total_weight(frm, cdt, cdn);
-    },
-    qty: function(frm, cdt, cdn) {
-        calculate_total_weight(frm, cdt, cdn);
-    },
+  
+    
 });
 
-function calculate_total_weight(frm, cdt, cdn) {
-    let d = locals[cdt][cdn];
-    let weight_per_unit = flt(d.weight_per_unit);
-    let qty = flt(d.qty);
-    if (weight_per_unit && qty) {
-        custom_total_weight = weight_per_unit * qty;
-        frappe.model.set_value(cdt, cdn, "total_weight", custom_total_weight);
-    }
-}
 
 function calculate_weight(frm, cdt, cdn) {
     let d = locals[cdt][cdn];
@@ -147,11 +146,8 @@ function calculate_weight(frm, cdt, cdn) {
         case "CUT PIECE":
             let sq_side_one = flt(d.custom_side);
             let sq_side_two = flt(d.custom_two_side)
-            console.log(sq_side_one)
             if (sq_side_one && sp_gr && sq_side_two) {
-                console.log(sp_gr)
                 weight = sq_side_one * sq_side_two * sp_gr * 0.000001;
-                console.log(weight)
             }
         break;
 
