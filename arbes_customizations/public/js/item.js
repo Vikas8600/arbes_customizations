@@ -1,5 +1,10 @@
 frappe.ui.form.on('Item', {
-
+    custom_to_uom: function(frm){
+        if (frm.doc.custom_to_uom == "MM" && frm.doc.stock_uom == "Kg"){
+            console.log("innnnnnnnnnnnnnnnnnnnn")
+            update_conversion_factor_from_weight(frm);
+        }
+    },
     stock_uom: function(frm){
         if (frm.doc.stock_uom === "MM"){
             frm.set_value("custom_to_uom", "Kg");
@@ -43,7 +48,7 @@ frappe.ui.form.on('Item', {
             "STAVAX CUT PIECES": 7.8,
             "RAMMAX CUT PIECES" :7.7,
             "MS PLATES":7.86,
-            "Ms CUT PIECES" : 7.86,
+            "MS CUT PIECES" : 7.86,
             "CUT PIECE": 0.0,
             "RECTANGLE": 0.0,
             "RECTANGLE HOLLOW PIPE": 0.0,
@@ -267,13 +272,13 @@ function calculate_weight(frm, cdt, cdn) {
             let side_two = flt(d.custom_two_side);
             let thickness = flt(d.custom_thickness);
             if (side_one && side_two && thickness && sp_gr) {
-                weight = side1 * side2 * thickness * sp_gr * 0.000001;
+                weight = side_one * side_two * thickness * sp_gr * 0.000001;
             }
             break;
             
-        case "K110 Cut pieces":
-        case "Stavax Cut Pieces":
-        case "Rammax Cut Pieces":
+        case "K110 CUT PIECES":
+        case "STAVAX CUT PIECES":
+        case "RAMMAX CUT PIECES":
             let side_x = flt(d.custom_side);
             let side_y = flt(d.custom_two_side);
             let thickness_z = flt(d.custom_thickness);
@@ -282,12 +287,21 @@ function calculate_weight(frm, cdt, cdn) {
             }
             break;
 
-        case "SS304 Cut Pieces":
+        case "SS304 CUT PIECES":
             let side_a = flt(d.custom_side);
             let side_b= flt(d.custom_two_side);
             let thickness_c = flt(d.custom_thickness);
             if (side_a && side_b && thickness_c && sp_gr) {
                 weight = side_a * side_b * thickness_c * sp_gr * 0.000001;
+            }
+            break;
+
+        case "MS CUT PIECES":
+            let side_l = flt(d.custom_side);
+            let side_m = flt(d.custom_two_side);
+            let thickness_n = flt(d.custom_thickness);
+            if (side_l && side_m && thickness_n && sp_gr) {
+                weight = side_l * side_m * thickness_n * sp_gr * 0.000001;
             }
             break;
 
