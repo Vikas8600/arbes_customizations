@@ -1,10 +1,14 @@
 frappe.ui.form.on('Item', {
     custom_to_uom: function(frm){
-        if (frm.doc.custom_to_uom == "MM" && frm.doc.stock_uom == "Kg"){
-            console.log("innnnnnnnnnnnnnnnnnnnn")
+        if (
+            (frm.doc.custom_to_uom === "MM" && frm.doc.stock_uom === "Kg") ||
+            (frm.doc.custom_to_uom === "Nos" && frm.doc.stock_uom === "Kg") ||
+            (frm.doc.custom_to_uom === "Kg" && ["MM", "Nos"].includes(frm.doc.stock_uom))
+        ) {
             update_conversion_factor_from_weight(frm);
         }
     },
+    
     stock_uom: function(frm){
         if (frm.doc.stock_uom === "MM"){
             frm.set_value("custom_to_uom", "Kg");
@@ -316,21 +320,27 @@ function update_conversion_factor_from_weight(frm) {
     const default_uom = frm.doc.stock_uom;
     const to_uom = frm.doc.custom_to_uom;
     const weight = flt(frm.doc.weight_per_unit || frm.doc.custom_total_weight);
-    if (!default_uom || !to_uom || !weight || weight<=0) return;
+    if (!default_uom || !to_uom || !weight || weight <= 0) return;
 
     let factor = 1;
 
-    if (default_uom === "Kg" && to_uom === "MM") {
+    if ((default_uom === "Kg" && ["MM", "Nos"].includes(to_uom))) {
         factor = weight;
-    } else if (default_uom === "MM" && to_uom === "Kg") {
-      
-        factor = weight ? (1 / weight) : 0;
-        console.log(factor)
+    } else if ((["MM", "Nos"].includes(default_uom) && to_uom === "Kg")) {
+        factor = 1 / weight;
     } else {
         return;
     }
 
-    // Set default UOM factor = 1
+    ["MM", "Nos"].forEach(conflicting_uom => {
+        if (conflicting_uom !== to_uom) {
+            let row_to_remove = frm.doc.uoms?.find(row => row.uom.toUpperCase() === conflicting_uom.toUpperCase());
+            if (row_to_remove) {
+                frm.get_field("uoms").grid.grid_rows_by_docname[row_to_remove.name].remove();
+            }
+        }
+    });
+
     let default_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === default_uom.toUpperCase());
     if (default_row) {
         frappe.model.set_value(default_row.doctype, default_row.name, "conversion_factor", 1);
@@ -341,7 +351,6 @@ function update_conversion_factor_from_weight(frm) {
         });
     }
 
-    // Set conversion factor for target UOM
     let to_row = frm.doc.uoms?.find(row => row.uom.toUpperCase() === to_uom.toUpperCase());
     if (to_row) {
         frappe.model.set_value(to_row.doctype, to_row.name, "conversion_factor", factor);
@@ -354,4 +363,3 @@ function update_conversion_factor_from_weight(frm) {
 
     frm.refresh_field("uoms");
 }
-
