@@ -225,7 +225,7 @@ doc_events = {
 
 # Request Events
 # ----------------
-# before_request = ["arbes_customizations.utils.before_request"]
+before_request = ["arbes_customizations.arbes_customization.override.general_ledger.before_request"]
 # after_request = ["arbes_customizations.utils.after_request"]
 
 # Job Events
