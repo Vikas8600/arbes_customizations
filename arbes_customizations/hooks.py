@@ -72,8 +72,23 @@ doc_events = {
     "Supplier": {
         "before_insert": "arbes_customizations.arbes_customization.override.supplier.before_insert"
     },
+    "Purchase Receipt": {
+        "before_save": "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_from_po"
+    },
+    "Purchase Invoice": {
+        "before_save": "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_for_pi"
+    },
+    "Delivery Note": {
+        "before_save": "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_for_dn"
+    },
+    "Item": {
+        "validate": "arbes_customizations.arbes_customization.override.item.validate"
+    },
+    "Purchase Order": {
+        "before_save": "arbes_customizations.arbes_customization.override.purchase_order.calculate_qty_from_default_uom"
+    },
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+# doctype_list_js = {"Material Request" : "public/js/material_request_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 

@@ -1,0 +1,116 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-19 10:00:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "shape_type",
+  "column_break_1",
+  "diameter",
+  "inner_diameter",
+  "outer_diameter",
+  "section_break_1",
+  "length",
+  "width",
+  "thickness",
+  "column_break_2",
+  "density",
+  "qty",
+  "calculated_weight"
+ ],
+ "fields": [
+  {
+   "fieldname": "shape_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Shape Type",
+   "options": "\nRod/Round Bar\nSheet\nCut Pieces\nFlat\nPipe/Tube",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.shape_type == 'Rod/Round Bar'",
+   "fieldname": "diameter",
+   "fieldtype": "Float",
+   "label": "Diameter (mm)"
+  },
+  {
+   "depends_on": "eval:doc.shape_type == 'Pipe/Tube'",
+   "fieldname": "inner_diameter",
+   "fieldtype": "Float",
+   "label": "Inner Diameter (mm)"
+  },
+  {
+   "depends_on": "eval:doc.shape_type == 'Pipe/Tube'",
+   "fieldname": "outer_diameter",
+   "fieldtype": "Float",
+   "label": "Outer Diameter (mm)"
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:['Rod/Round Bar', 'Sheet', 'Cut Pieces', 'Flat', 'Pipe/Tube'].includes(doc.shape_type)",
+   "fieldname": "length",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Length (mm)"
+  },
+  {
+   "depends_on": "eval:['Sheet', 'Cut Pieces', 'Flat'].includes(doc.shape_type)",
+   "fieldname": "width",
+   "fieldtype": "Float",
+   "label": "Width (mm)"
+  },
+  {
+   "depends_on": "eval:['Sheet', 'Cut Pieces', 'Flat'].includes(doc.shape_type)",
+   "fieldname": "thickness",
+   "fieldtype": "Float",
+   "label": "Thickness (mm)"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "7.93",
+   "fieldname": "density",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Density (g/cm\u00b3)"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:['Sheet', 'Cut Pieces'].includes(doc.shape_type)",
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "calculated_weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Calculated Weight (KG)",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-01-20 14:41:03.878207",
+ "modified_by": "Administrator",
+ "module": "Arbes Customization",
+ "name": "Item Dimension",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

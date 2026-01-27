@@ -28,6 +28,14 @@ frappe.ui.form.on('Purchase Order', {
 });
 
 frappe.ui.form.on('Purchase Order Item', {
+
+    item_code(frm, cdt, cdn) {
+        calculate_qty_from_default_uom(frm, cdt, cdn);
+    },
+
+    custom_default_uom_qty(frm, cdt, cdn) {
+        calculate_qty_from_default_uom(frm, cdt, cdn);
+    },
     custom_custom_section: function(frm, cdt, cdn) {
         calculate_weight(frm, cdt, cdn);
     },
@@ -257,4 +265,20 @@ function calculate_weight(frm, cdt, cdn) {
 
     }
     frappe.model.set_value(cdt, cdn, "weight_per_unit", flt(weight) || 0);
+}
+
+function calculate_qty_from_default_uom(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+
+    if (!row.custom_default_uom_qty || !row.custom_calculated_weight_kg) {
+        row.qty = 0;
+        frm.refresh_field('items');
+        return;
+    }
+
+    let qty_in_kg = flt(row.custom_default_uom_qty) * flt(row.custom_calculated_weight_kg);
+
+    row.qty = qty_in_kg;
+
+    frm.refresh_field('items');
 }

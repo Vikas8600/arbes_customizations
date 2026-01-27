@@ -1,4 +1,17 @@
 frappe.ui.form.on('Item', {
+    refresh: function(frm) {
+        calculate_item_dimension_total_weight(frm);
+
+        limit_item_dimension_rows(frm);
+    },
+    custom_item_shape: function(frm) {
+        if (frm.doc.custom_item_dimension) {
+            frm.doc.custom_item_dimension.forEach(function(row) {
+                frappe.model.set_value(row.doctype, row.name, 'shape_type', frm.doc.custom_item_shape);
+            });
+        }
+        frm.refresh_field('custom_item_dimension');
+    },
     custom_to_uom: function(frm){
         if (
             (frm.doc.custom_to_uom === "MM" && frm.doc.stock_uom === "Kg") ||
@@ -362,4 +375,199 @@ function update_conversion_factor_from_weight(frm) {
     }
 
     frm.refresh_field("uoms");
+}
+
+frappe.ui.form.on('Item Dimension', {
+    shape_type: function(frm, cdt, cdn) {
+        toggle_item_dimension_fields(frm, cdt, cdn);
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    form_render: function(frm, cdt, cdn) {
+        toggle_item_dimension_fields(frm, cdt, cdn);
+    },
+    diameter: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    inner_diameter: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    outer_diameter: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    length: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    width: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    thickness: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    density: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    qty: function(frm, cdt, cdn) {
+        calculate_item_dimension_row_weight(frm, cdt, cdn);
+    },
+    custom_item_dimension_add: function(frm, cdt, cdn) {
+        if (frm.doc.custom_item_shape) {
+            frappe.model.set_value(cdt, cdn, 'shape_type', frm.doc.custom_item_shape);
+        }
+        frappe.model.set_value(cdt, cdn, 'density', 7.93);
+        frappe.model.set_value(cdt, cdn, 'qty', 1);
+        limit_item_dimension_rows(frm);
+    },
+    custom_item_dimension_remove: function(frm) {
+        calculate_item_dimension_total_weight(frm);
+        limit_item_dimension_rows(frm);
+    }
+});
+
+function calculate_item_dimension_row_weight(frm, cdt, cdn) {
+    let row = frappe.get_doc(cdt, cdn);
+    let weight = 0;
+    const PI = 3.14;  
+
+    let density = row.density || 7.93;
+
+    let qty = row.qty || 1;
+
+    switch(row.shape_type) {
+        case 'Rod/Round Bar':
+            if (row.diameter && row.length) {
+                let radius = row.diameter / 2;
+                weight = PI * Math.pow(radius, 2) * row.length * density / 1000000;
+            }
+            break;
+
+        case 'Sheet':
+        case 'Cut Pieces':
+            if (row.length && row.width && row.thickness) {
+                weight = row.length * row.width * row.thickness * density * qty / 1000000;
+            }
+            break;
+
+        case 'Flat':
+            if (row.length && row.width && row.thickness) {
+                weight = row.length * row.width * row.thickness * density / 1000000;
+            }
+            break;
+
+        case 'Pipe/Tube':
+            if (row.outer_diameter && row.inner_diameter && row.length) {
+                let outer_radius = row.outer_diameter / 2;
+                let inner_radius = row.inner_diameter / 2;
+                weight = PI * (Math.pow(outer_radius, 2) - Math.pow(inner_radius, 2)) * row.length * density / 1000000;
+            }
+            break;
+    }
+
+    frappe.model.set_value(cdt, cdn, 'calculated_weight', weight);
+    calculate_item_dimension_total_weight(frm);
+}
+
+function calculate_item_dimension_total_weight(frm) {
+    let total = 0;
+    if (frm.doc.custom_item_dimension) {
+        frm.doc.custom_item_dimension.forEach(function(row) {
+            total += (row.calculated_weight || 0);
+        });
+    }
+
+    if (frm.doc.custom_item_dimension && frm.doc.custom_item_dimension.length > 0) {
+        frm.set_value('custom_total_weight', total);
+    }
+}
+
+function toggle_item_dimension_fields(frm, cdt, cdn) {
+    let row = frappe.get_doc(cdt, cdn);
+    let grid_row = frm.fields_dict.custom_item_dimension.grid.grid_rows_by_docname[cdn];
+
+    if (!grid_row) return;
+
+    let shape = row.shape_type || '';
+
+    let field_visibility = {
+        'Rod/Round Bar': {
+            diameter: true,
+            inner_diameter: false,
+            outer_diameter: false,
+            length: true,
+            width: false,
+            thickness: false,
+            qty: false
+        },
+        'Sheet': {
+            diameter: false,
+            inner_diameter: false,
+            outer_diameter: false,
+            length: true,
+            width: true,
+            thickness: true,
+            qty: true
+        },
+        'Cut Pieces': {
+            diameter: false,
+            inner_diameter: false,
+            outer_diameter: false,
+            length: true,
+            width: true,
+            thickness: true,
+            qty: true
+        },
+        'Flat': {
+            diameter: false,
+            inner_diameter: false,
+            outer_diameter: false,
+            length: true,
+            width: true,
+            thickness: true,
+            qty: false
+        },
+        'Pipe/Tube': {
+            diameter: false,
+            inner_diameter: true,
+            outer_diameter: true,
+            length: true,
+            width: false,
+            thickness: false,
+            qty: false
+        }
+    };
+
+    let visibility = field_visibility[shape] || {
+        diameter: false,
+        inner_diameter: false,
+        outer_diameter: false,
+        length: false,
+        width: false,
+        thickness: false,
+        qty: false
+    };
+
+    let fields_to_toggle = ['diameter', 'inner_diameter', 'outer_diameter', 'length', 'width', 'thickness', 'qty'];
+
+    fields_to_toggle.forEach(function(fieldname) {
+        let field = grid_row.get_field(fieldname);
+        if (field) {
+            if (visibility[fieldname]) {
+                field.df.hidden = 0;
+                field.refresh();
+            } else {
+                field.df.hidden = 1;
+                field.refresh();
+                frappe.model.set_value(cdt, cdn, fieldname, 0);
+            }
+        }
+    });
+}
+
+function limit_item_dimension_rows(frm) {
+    let grid = frm.fields_dict.custom_item_dimension.grid;
+    if (frm.doc.custom_item_dimension && frm.doc.custom_item_dimension.length >= 1) {
+        grid.cannot_add_rows = true;
+    } else {
+        grid.cannot_add_rows = false;
+    }
+    grid.refresh();
 }
