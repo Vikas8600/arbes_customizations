@@ -270,15 +270,9 @@ function calculate_weight(frm, cdt, cdn) {
 function calculate_qty_from_default_uom(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
 
-    if (!row.custom_default_uom_qty || !row.custom_calculated_weight_kg) {
-        row.qty = 0;
+    if (row.custom_default_uom_qty && row.custom_calculated_weight_kg) {
+        let qty_in_kg = flt(row.custom_default_uom_qty) * flt(row.custom_calculated_weight_kg);
+        row.qty = qty_in_kg;
         frm.refresh_field('items');
-        return;
     }
-
-    let qty_in_kg = flt(row.custom_default_uom_qty) * flt(row.custom_calculated_weight_kg);
-
-    row.qty = qty_in_kg;
-
-    frm.refresh_field('items');
 }

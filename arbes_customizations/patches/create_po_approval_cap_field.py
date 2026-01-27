@@ -10,9 +10,9 @@ def execute():
             {
                 "fieldname": "po_approval_amount_cap",
                 "fieldtype": "Currency",
-                "label": "PO Approval Amount Cap (in Lakhs)",
+                "label": "PO Approval Amount Cap",
                 "insert_after": "maintain_same_rate",
-                "description": "If PO amount exceeds this value (in Lakhs), System Manager approval is required. Set 0 to skip this check. E.g., 5 means 5 Lakhs."
+
             }
         ]
     }
