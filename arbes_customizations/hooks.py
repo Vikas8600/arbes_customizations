@@ -73,13 +73,16 @@ doc_events = {
         "before_insert": "arbes_customizations.arbes_customization.override.supplier.before_insert"
     },
     "Purchase Receipt": {
-        "before_save": "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_from_po"
+        "before_save": [
+            "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_from_po",
+            "arbes_customizations.arbes_customization.override.purchase_receipt.calculate_extra_qty"
+        ]
     },
     "Purchase Invoice": {
-        "before_save": "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_for_pi"
-    },
-    "Delivery Note": {
-        "before_save": "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_for_dn"
+        "before_save": [
+            "arbes_customizations.arbes_customization.override.purchase_receipt.set_default_uom_qty_for_pi",
+            "arbes_customizations.arbes_customization.override.purchase_receipt.calculate_extra_qty_for_pi"
+        ]
     },
     "Item": {
         "validate": "arbes_customizations.arbes_customization.override.item.validate"
