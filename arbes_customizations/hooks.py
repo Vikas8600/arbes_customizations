@@ -56,7 +56,8 @@ doctype_js = {
                 "Purchase Invoice" : ["public/js/purchase_invoice.js","public/js/e_waybill_override.js"],
                 "Production Plan": "public/js/production_plan.js",
                 "Material Request": "public/js/material_request.js",
-                "Item": "public/js/item.js"
+                "Item": "public/js/item.js",
+                "Request for Quotation": "public/js/request_for_quotation.js"
     }
 
 doc_events = { 
@@ -91,7 +92,10 @@ doc_events = {
         "before_save": "arbes_customizations.arbes_customization.override.purchase_order.calculate_qty_from_default_uom"
     },
 }
-doctype_list_js = {"Material Request" : "public/js/material_request_list.js"}
+doctype_list_js = {
+    "Material Request": "public/js/material_request_list.js",
+    "Request for Quotation": "public/js/request_for_quotation_list.js"
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -289,3 +293,21 @@ before_request = ["arbes_customizations.arbes_customization.override.general_led
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+
+
+# fixtures = [
+#     {
+#         "dt": "Custom HTML Block",
+#         "filters": [
+#             ["name", "in", [
+#                 "Quotation Monthly Stats 2",
+#                 "Opportunity Monthly Stats 2",
+#                 "Lead Monthly Stats",
+#                 "Customer Monthly Stats",
+#                 "Purchase Dashboard 1",
+#                 "Purchase Dashboard",
+#                 "Sales Dashboard",
+#             ]],
+#         ],
+#     },
+# ]
