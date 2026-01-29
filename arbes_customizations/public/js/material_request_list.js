@@ -1,5 +1,9 @@
-frappe.listview_settings['Material Request'] = {
+const original_settings = frappe.listview_settings['Material Request'] || {};
+frappe.listview_settings['Material Request'] = Object.assign({}, original_settings, {
     onload(listview) {
+        if (original_settings.onload) {
+            original_settings.onload(listview);
+        }
         listview.page.add_action_item(__('Send Inquiry'), () => {
             const selected = listview.get_checked_items();
 
@@ -36,7 +40,7 @@ frappe.listview_settings['Material Request'] = {
             });
         });
     }
-};
+});
 
 function open_listview_inquiry_dialog(material_requests) {
     frappe.call({

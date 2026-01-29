@@ -96,8 +96,8 @@ def send_supplier_inquiry(material_request, supplier_map):
     if mr.docstatus != 1:
         frappe.throw("Inquiry can only be sent for Submitted Material Requests")
 
-    if mr.material_request_type != "Material Issue":
-        frappe.throw("Inquiry can only be sent for Material Issue type")
+    if mr.material_request_type != "Purchase":
+        frappe.throw("Inquiry can only be sent for Purchase type")
 
     supplier_items = defaultdict(list)
 
@@ -212,6 +212,7 @@ Purchase Executive
 
     frappe.sendmail(
         recipients=[recipient_email],
+        sender="purchaseteam@arbestools.com",
         subject=subject,
         message=message,
         reference_doctype="Material Request",
@@ -263,7 +264,7 @@ def validate_mrs_for_inquiry(material_requests):
             skipped.append(f"{mr} (Draft)")
             continue
 
-        if doc.material_request_type != "Material Issue":
+        if doc.material_request_type != "Purchase":
             skipped.append(f"{mr} (Type: {doc.material_request_type})")
             continue
 
@@ -276,7 +277,7 @@ def validate_mrs_for_inquiry(material_requests):
     if not valid_mrs:
         return {
             "valid": False,
-            "message": "No valid MRs selected. Only Submitted Material Issue MRs are allowed."
+            "message": "No valid MRs selected. Only Submitted Purchase MRs are allowed."
         }
 
     return {
@@ -299,7 +300,7 @@ def get_mr_items_for_inquiry(material_requests):
 
         doc = frappe.get_doc("Material Request", mr)
 
-        if doc.docstatus != 1 or doc.material_request_type != "Material Issue":
+        if doc.docstatus != 1 or doc.material_request_type != "Purchase":
             continue
 
         for item in doc.items:
@@ -329,7 +330,7 @@ def send_supplier_inquiry_from_list(material_requests, supplier_map):
 
         mr = frappe.get_doc("Material Request", mr_name)
 
-        if mr.docstatus != 1 or mr.material_request_type != "Material Issue":
+        if mr.docstatus != 1 or mr.material_request_type != "Purchase":
             continue
 
         supplier_items = defaultdict(list)
@@ -366,7 +367,7 @@ def get_inquiry_stats(from_date=None, to_date=None):
         INNER JOIN `tabMaterial Request` mr ON mr.name = mri.parent
         WHERE mri.custom_inquiry_sent = 1
         AND mr.docstatus = 1
-        AND mr.material_request_type = 'Material Issue'
+        AND mr.material_request_type = 'Purchase'
         {date_filter}
     """, as_dict=True)[0].count or 0
 
@@ -376,7 +377,7 @@ def get_inquiry_stats(from_date=None, to_date=None):
         INNER JOIN `tabMaterial Request` mr ON mr.name = mri.parent
         WHERE mri.custom_inquiry_sent = 1
         AND mr.docstatus = 1
-        AND mr.material_request_type = 'Material Issue'
+        AND mr.material_request_type = 'Purchase'
         {date_filter}
     """, as_dict=True)[0].count or 0
 
@@ -386,7 +387,7 @@ def get_inquiry_stats(from_date=None, to_date=None):
         INNER JOIN `tabMaterial Request` mr ON mr.name = mri.parent
         WHERE mri.custom_inquiry_sent = 0
         AND mr.docstatus = 1
-        AND mr.material_request_type = 'Material Issue'
+        AND mr.material_request_type = 'Purchase'
     """, as_dict=True)[0].count or 0
 
     return {

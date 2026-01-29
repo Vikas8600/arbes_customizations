@@ -91,7 +91,7 @@ doc_events = {
         "before_save": "arbes_customizations.arbes_customization.override.purchase_order.calculate_qty_from_default_uom"
     },
 }
-# doctype_list_js = {"Material Request" : "public/js/material_request_list.js"}
+doctype_list_js = {"Material Request" : "public/js/material_request_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 

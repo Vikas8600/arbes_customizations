@@ -14,7 +14,7 @@ frappe.ui.form.on("Material Request", {
     }
     if (
             frm.doc.docstatus === 1 &&
-            frm.doc.material_request_type === "Material Issue" &&
+            frm.doc.material_request_type === "Purchase" &&
             frm.doc.items?.length
         ) {
             frm.add_custom_button(
