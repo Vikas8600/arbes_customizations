@@ -103,14 +103,14 @@ def get_sales_revenue_data(from_date=None, to_date=None):
                 ELSE 0 END) as pending_amount
         FROM `tabSales Order`
         WHERE docstatus = 1
-        AND DATE(creation) BETWEEN %(from_date)s AND %(to_date)s
+        AND transaction_date BETWEEN %(from_date)s AND %(to_date)s
     """, {"from_date": from_date, "to_date": to_date}, as_dict=True)
 
     si_result = frappe.db.sql("""
         SELECT SUM(base_grand_total) as si_total
         FROM `tabSales Invoice`
         WHERE docstatus = 1
-        AND DATE(creation) BETWEEN %(from_date)s AND %(to_date)s
+        AND posting_date BETWEEN %(from_date)s AND %(to_date)s
     """, {"from_date": from_date, "to_date": to_date}, as_dict=True)
 
     if so_result and so_result[0]:
@@ -150,14 +150,14 @@ def get_monthly_revenue_data(from_date=None, to_date=None):
                     ELSE 0 END) as pending_amount
             FROM `tabSales Order`
             WHERE docstatus = 1
-            AND DATE(creation) BETWEEN %(start)s AND %(end)s
+            AND transaction_date BETWEEN %(start)s AND %(end)s
         """, {"start": month_start, "end": month_end}, as_dict=True)
 
         si_result = frappe.db.sql("""
             SELECT SUM(base_grand_total) as si_total
             FROM `tabSales Invoice`
             WHERE docstatus = 1
-            AND DATE(creation) BETWEEN %(start)s AND %(end)s
+            AND posting_date BETWEEN %(start)s AND %(end)s
         """, {"start": month_start, "end": month_end}, as_dict=True)
 
         so_amount = so_result[0].so_total if so_result and so_result[0].so_total else 0
