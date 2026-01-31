@@ -87,6 +87,61 @@ def get_mr_po_amount(from_date=None, to_date=None, filter_type="total"):
 
 
 @frappe.whitelist()
+def get_subcon_po_amounts(from_date=None, to_date=None, company=None):
+ 
+    total_result = frappe.db.sql("""
+        SELECT SUM(po.base_grand_total) as total_amount
+        FROM `tabPurchase Order` po
+        WHERE po.docstatus = 1
+        AND po.is_subcontracted = 1
+        AND po.status NOT IN ('Stopped', 'On Hold')
+        AND po.transaction_date BETWEEN %(from_date)s AND %(to_date)s
+        AND (%(company)s IS NULL OR po.company = %(company)s)
+    """, {"from_date": from_date, "to_date": to_date, "company": company}, as_dict=True)
+
+    bill_result = frappe.db.sql("""
+        SELECT
+            SUM(poi.base_amount) as amount,
+            SUM(poi.billed_amt * IFNULL(po.conversion_rate, 1)) as billed_amount,
+            SUM(poi.base_amount - (poi.billed_amt * IFNULL(po.conversion_rate, 1))) as pending_amount
+        FROM `tabPurchase Order` po
+        INNER JOIN `tabPurchase Order Item` poi ON poi.parent = po.name
+        WHERE po.docstatus = 1
+        AND po.is_subcontracted = 1
+        AND po.status NOT IN ('Stopped', 'On Hold')
+        AND po.transaction_date BETWEEN %(from_date)s AND %(to_date)s
+        AND (%(company)s IS NULL OR po.company = %(company)s)
+    """, {"from_date": from_date, "to_date": to_date, "company": company}, as_dict=True)
+
+    received_result = frappe.db.sql("""
+        SELECT SUM(pri.base_amount) as received_amount
+        FROM `tabPurchase Receipt` pr
+        INNER JOIN `tabPurchase Receipt Item` pri ON pri.parent = pr.name
+        INNER JOIN `tabPurchase Order Item` poi ON pri.purchase_order_item = poi.name
+        INNER JOIN `tabPurchase Order` po ON poi.parent = po.name
+        WHERE pr.docstatus = 1
+        AND po.is_subcontracted = 1
+        AND po.transaction_date BETWEEN %(from_date)s AND %(to_date)s
+        AND (%(company)s IS NULL OR po.company = %(company)s)
+    """, {"from_date": from_date, "to_date": to_date, "company": company}, as_dict=True)
+
+    total_amount = float(total_result[0].total_amount or 0) if total_result else 0
+    amount = float(bill_result[0].amount or 0) if bill_result else 0
+    billed_amount = float(bill_result[0].billed_amount or 0) if bill_result else 0
+    pending_amount = float(bill_result[0].pending_amount or 0) if bill_result else 0
+    received_amount = float(received_result[0].received_amount or 0) if received_result else 0
+
+    return {
+        "total_amount": total_amount,  
+        "amount": amount,  
+        "billed_amount": billed_amount,
+        "pending_amount": pending_amount,  
+        "received_amount": received_amount,
+        "to_receive_amount": amount - received_amount  
+    }
+
+
+@frappe.whitelist()
 def get_sales_revenue_data(from_date=None, to_date=None):
    
     data = {
