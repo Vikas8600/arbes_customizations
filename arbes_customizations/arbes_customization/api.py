@@ -32,6 +32,7 @@ def get_mr_to_be_billed_count(from_date=None, to_date=None):
         INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
         WHERE mri.parent IN %(mr_names)s
             AND po.docstatus = 1
+            AND po.per_received = 100
             AND po.per_billed < 100
             AND po.status NOT IN ('Closed', 'Cancelled')
     """, {"mr_names": mr_names}, as_dict=True)
@@ -229,3 +230,45 @@ def get_monthly_revenue_data(from_date=None, to_date=None):
         current = current + relativedelta(months=1)
 
     return months_data[-12:]
+
+
+@frappe.whitelist()
+def get_sales_bifurcation_pending(from_date=None, to_date=None, company=None):
+   
+    result = frappe.db.sql("""
+        SELECT
+            so.custom_domestic_export,
+            so.territory,
+            SUM(soi.base_amount - soi.billed_amt) as pending_amount
+        FROM `tabSales Order` so
+        INNER JOIN `tabSales Order Item` soi ON soi.parent = so.name
+        WHERE so.docstatus = 1
+        AND so.status NOT IN ('Stopped', 'On Hold', 'Closed')
+        AND so.transaction_date BETWEEN %(from_date)s AND %(to_date)s
+        AND (%(company)s IS NULL OR so.company = %(company)s)
+        AND soi.billed_amt < soi.amount
+        GROUP BY so.custom_domestic_export, so.territory
+    """, {"from_date": from_date, "to_date": to_date, "company": company}, as_dict=True)
+
+    domestic_pending = 0
+    export_usa_pending = 0
+    export_row_pending = 0
+
+    for row in result:
+        pending = float(row.pending_amount or 0)
+        dom_export = row.custom_domestic_export or ""
+        territory = row.territory or ""
+
+        if dom_export == "Domestic":
+            domestic_pending += pending
+        elif dom_export == "Export":
+            if territory == "USA":
+                export_usa_pending += pending
+            else:
+                export_row_pending += pending
+
+    return {
+        "domestic_pending": domestic_pending,
+        "export_usa_pending": export_usa_pending,
+        "export_row_pending": export_row_pending
+    }
