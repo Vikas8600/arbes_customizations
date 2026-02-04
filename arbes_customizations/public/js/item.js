@@ -346,7 +346,7 @@ function update_conversion_factor_from_weight(frm) {
     }
 
     ["MM", "Nos"].forEach(conflicting_uom => {
-        if (conflicting_uom !== to_uom) {
+        if (conflicting_uom !== to_uom && conflicting_uom.toUpperCase() !== default_uom.toUpperCase()) {
             let row_to_remove = frm.doc.uoms?.find(row => row.uom.toUpperCase() === conflicting_uom.toUpperCase());
             if (row_to_remove) {
                 frm.get_field("uoms").grid.grid_rows_by_docname[row_to_remove.name].remove();
