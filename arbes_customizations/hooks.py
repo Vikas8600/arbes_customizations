@@ -62,7 +62,12 @@ doctype_js = {
 
 doc_events = { 
     "Sales Order": {
+        "validate": "arbes_customizations.arbes_customization.override.sales_order.set_pending_amount",
         "before_submit": "arbes_customizations.arbes_customization.override.sales_order.before_submit",
+    },
+    "Sales Invoice": {
+        "on_submit": "arbes_customizations.arbes_customization.override.sales_order.update_pending_amount_from_si",
+        "on_cancel": "arbes_customizations.arbes_customization.override.sales_order.update_pending_amount_from_si",
     },
     "Quotation": {
         "after_insert": "arbes_customizations.arbes_customization.override.quotation.after_insert",
