@@ -3200,7 +3200,7 @@
    "property": "options",
    "property_type": "Small Text",
    "row_name": null,
-   "value": "MAT-STE-\nMAT-STE-.YYYY.-\nMRN-25-26-\nDIN-25-26-\nDMI-25-26-"
+    "value": "DIN-25-26-\nDIN-25-26-.####.\nDIN-2526-.####.\nDMI-25-26-\nDMI-25-26-.####.\nMAT-STE-\nMAT-STE-.YYYY.-\nMAT-STE-2025-\nMI-.###./25-26\nMRN-25-26-\nMRN-25-26-.####.\nMRN-2526-.####."
   },
   {
    "_assign": null,

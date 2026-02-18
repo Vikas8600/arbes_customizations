@@ -758,7 +758,7 @@
    "property": "options",
    "property_type": "Text",
    "row_name": null,
-   "value": "\nATPL-2526-.###.\nGST-2526-.###.\nE-2526-.###.\nE-.###.\nGST-.###.\nATPL-.###."
+    "value": "\nATPL-.###.\nATPL-.###./25-26\nATPL-2526-.###.\nE-.###.\nE-2526-.###.\nGST-.###.\nGST-.###./25-26\nGST-2526-.###.\nSINV-.YY.-"
   },
   {
    "_assign": null,

@@ -1,0 +1,189 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-18 14:20:35.765077",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "so_number",
+  "priority",
+  "start_date",
+  "customer",
+  "item_code",
+  "description",
+  "section_break_wska",
+  "die_blank",
+  "die_ref_no",
+  "die_no",
+  "die_status",
+  "gear",
+  "gasket",
+  "distribution_p_description",
+  "distribution_p_number",
+  "column_break_fifc",
+  "seg_blank",
+  "segment_type",
+  "seg_status",
+  "segment_description",
+  "segment_no",
+  "gear_type",
+  "tax_invoice_no",
+  "dispatchd_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "so_number",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "SO Number",
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fetch_from": "so_number.customer",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "columns": 2,
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description"
+  },
+  {
+   "fieldname": "die_blank",
+   "fieldtype": "Select",
+   "label": "Die Blank",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "die_ref_no",
+   "fieldtype": "Data",
+   "label": "Die Ref. No."
+  },
+  {
+   "fieldname": "die_no",
+   "fieldtype": "Data",
+   "label": "Die. No."
+  },
+  {
+   "fieldname": "seg_blank",
+   "fieldtype": "Select",
+   "label": "Seg Blank",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "segment_type",
+   "fieldtype": "Data",
+   "label": "Segment Type"
+  },
+  {
+   "fieldname": "segment_description",
+   "fieldtype": "Select",
+   "label": "Segment Description",
+   "options": "\nBottom\nSide"
+  },
+  {
+   "fieldname": "segment_no",
+   "fieldtype": "Data",
+   "label": "Segment No."
+  },
+  {
+   "fieldname": "distribution_p_description",
+   "fieldtype": "Small Text",
+   "label": "Distribution P. Description"
+  },
+  {
+   "fieldname": "distribution_p_number",
+   "fieldtype": "Data",
+   "label": "Distribution P. Number"
+  },
+  {
+   "fieldname": "gasket",
+   "fieldtype": "Select",
+   "label": "Gasket",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "gear_type",
+   "fieldtype": "Data",
+   "label": "Gear Type"
+  },
+  {
+   "fieldname": "gear",
+   "fieldtype": "Select",
+   "label": "Gear",
+   "options": "\nYes\nNo"
+  },
+  {
+   "fieldname": "die_status",
+   "fieldtype": "Autocomplete",
+   "in_list_view": 1,
+   "label": "DIE Status",
+   "options": "\nNot Started\nPre CNC\nCNC\nFinal QC\nReady\nDispatched"
+  },
+  {
+   "fieldname": "seg_status",
+   "fieldtype": "Autocomplete",
+   "in_list_view": 1,
+   "label": "SEG Status",
+   "options": "\nNot Started\nPre CNC\nCNC\nPRE QC\nCoating\nFinal QC\nReady\nDispatched"
+  },
+  {
+   "fieldname": "tax_invoice_no",
+   "fieldtype": "Data",
+   "label": "Tax Invoice No."
+  },
+  {
+   "fieldname": "dispatchd_date",
+   "fieldtype": "Date",
+   "label": "Dispatchd Date"
+  },
+  {
+   "fieldname": "section_break_wska",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fifc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 1,
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Priority",
+   "options": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nDelayed\nOver Delayed\nHold"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-18 15:58:10.509227",
+ "modified_by": "Administrator",
+ "module": "Arbes Customization",
+ "name": "Change Part Orders Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

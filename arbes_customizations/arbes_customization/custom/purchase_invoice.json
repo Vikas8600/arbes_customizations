@@ -430,7 +430,7 @@
    "property": "options",
    "property_type": "Text",
    "row_name": null,
-   "value": "\nEXP-JAN26-.###\nPUR-JAN26-.###\nPUR-DEC25-.###\nEXP-DEC25-.###\nPUR-NOV25-.###\nEXP-NOV25-.###\nPUR-OCT25-.###\nEXP-OCT25-.###\nDN-25-26-.###\nPUR-SEP25-.###\nEXP-SEP25-.###\nPUR-AUG25-.###\nEXP-AUG25-.###\nPUR-JUL25-.###\nEXP-JUL25-.###\nPUR-MAR25-.###\nPUR-JUN25-.###\nEXP-JUN25-.###\nPUR-MAY25-.###\nEXP-MAY25-.###\nPUR-APR25-.###\nEXP-APR25-.###"
+    "value": "\nDN-25-26-.###\nEXP-APR25-.###\nEXP-AUG25-.###\nEXP-DEC25-.###\nEXP-FEB26-.###\nEXP-JAN26-.###\nEXP-JUL25-.###\nEXP-JUN25-.###\nEXP-MAY25-.###\nEXP-NOV25-.###\nEXP-OCT25-.###\nEXP-SEP25-.###\nPINV-.YY.-\nPUR-APR25-.###\nPUR-AUG25-.###\nPUR-DEC25-.###\nPUR-FEB26-.###\nPUR-JAN25-.###\nPUR-JAN26-.###\nPUR-JUL25-.###\nPUR-JUN25-.###\nPUR-MAR25-.###\nPUR-MAY25-.###\nPUR-NOV25-.###\nPUR-OCT25-.###\nPUR-SEP25-.###\nPUR/APR25/.###"
   },
   {
    "_assign": null,
