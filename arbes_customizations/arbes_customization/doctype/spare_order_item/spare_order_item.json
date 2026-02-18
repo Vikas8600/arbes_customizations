@@ -15,7 +15,8 @@
   "stock",
   "readiness_date",
   "section_break_ybpm",
-  "item_description"
+  "item_description",
+  "remarks"
  ],
  "fields": [
   {
@@ -82,13 +83,19 @@
   {
    "fieldname": "column_break_kvzr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks",
+   "permlevel": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-18 16:21:49.176414",
+ "modified": "2026-02-18 16:58:37.927219",
  "modified_by": "Administrator",
  "module": "Arbes Customization",
  "name": "Spare Order Item",

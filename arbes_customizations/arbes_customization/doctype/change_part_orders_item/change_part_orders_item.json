@@ -12,6 +12,7 @@
   "customer",
   "item_code",
   "description",
+  "remarks",
   "section_break_wska",
   "die_blank",
   "die_ref_no",
@@ -169,13 +170,18 @@
    "in_list_view": 1,
    "label": "Priority",
    "options": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nDelayed\nOver Delayed\nHold"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-18 15:58:10.509227",
+ "modified": "2026-02-18 16:59:01.013303",
  "modified_by": "Administrator",
  "module": "Arbes Customization",
  "name": "Change Part Orders Item",
